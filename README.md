@@ -1,0 +1,2 @@
+# tips
+prework of coderschool
