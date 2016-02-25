@@ -47,3 +47,4 @@ let tipTypes = [ContentType.Restaurant, ContentType.Hotel, ContentType.Spa, Cont
 //let contentType = ["Tip for Restaurant", "Tip for Hotel", "Tip for Spa", "Tip for Taxi"]
 
 let kTipType = "tiptype"
+let kBillAmount = "billamount"

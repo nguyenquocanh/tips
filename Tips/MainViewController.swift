@@ -13,6 +13,7 @@ class MainViewController: UITableViewController {
     private weak var menu: MenuView!
     private var indexTipType: Int = 0
     private var tipType: ContentType!
+    private var appDelegate: AppDelegate!
 
     @IBOutlet weak var tipPercent1: UILabel!
     @IBOutlet weak var tipPercent2: UILabel!
@@ -25,16 +26,26 @@ class MainViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         loadMenu()
         tipType = tipTypes[NSUserDefaults.standardUserDefaults().objectForKey(kTipType) as! Int]
+        billField.text = "\(appDelegate.billAmount!)"
+        if billField.text == "0.0" {
+            billField.text = ""
+        }
+        billField.delegate = self
+        
         title = tipType.description
-        billField.placeholder = "0.00"
         tip1Label.text = "$0.00"
         tip2Label.text = "$0.00"
         tip3Label.text = "$0.00"
         
         calculate()
         // Do any additional setup after loading the view.
+        delay(0.5, closure: {
+            self.billField.becomeFirstResponder()
+            self.tableView.scrollRectToVisible(CGRectZero, animated: false)
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -47,8 +58,10 @@ class MainViewController: UITableViewController {
     }
     
     func calculate() {
+        
         let tipPercentages = tipType.percent
         let billAmount = NSString(string: billField.text!).doubleValue
+        appDelegate.billAmount = billAmount
         let tip1 = billAmount + (billAmount * tipPercentages[0])
         let tip2 = billAmount + (billAmount * tipPercentages[1])
         let tip3 = billAmount + (billAmount * tipPercentages[2])
@@ -57,13 +70,14 @@ class MainViewController: UITableViewController {
         tipPercent2.text = String(format: "%.0f%", tipPercentages[1] * 100)
         tipPercent3.text = String(format: "%.0f%", tipPercentages[2] * 100)
         
-        tip1Label.text = String(format: "$%.2f", tip1)
-        tip2Label.text = String(format: "$%.2f", tip2)
-        tip3Label.text = String(format: "$%.2f", tip3)
+        tip1Label.text = "\(Money(floatLiteral: tip1))"
+        tip2Label.text = "\(Money(floatLiteral: tip2))"
+        tip3Label.text = "\(Money(floatLiteral: tip3))"
     }
     
     @IBAction func onTap(sender: AnyObject) {
         self.view.endEditing(true)
+        self.tableView.scrollRectToVisible(CGRectZero, animated: true)
     }
 
     private func loadMenu() {
@@ -85,6 +99,30 @@ class MainViewController: UITableViewController {
         menu.setRevealed(!menu.revealed, animated: true)
     }
     
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
+    }
+
+}
+
+extension MainViewController: UITextFieldDelegate {
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        
+        let newString = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string) as NSString
+        if newString.length > 0 {
+            let scanner: NSScanner = NSScanner(string:newString as String)
+            let isNumeric = scanner.scanDecimal(nil) && scanner.atEnd
+            return isNumeric
+            
+        } else {
+            return true
+        }
+    }
 }
 
 // MARK: - MenuViewDelegate
