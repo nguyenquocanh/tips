@@ -28,8 +28,8 @@ class MainViewController: UITableViewController {
 
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         loadMenu()
-        tipType = tipTypes[NSUserDefaults.standardUserDefaults().objectForKey(kTipType) as! Int]
-        billField.text = "\(appDelegate.billAmount!)"
+        tipType = tipTypes[NSUserDefaults.standardUserDefaults().objectForKey(TipType) as! Int]
+        billField.text = "\(appDelegate.amount!)"
         if billField.text == "0.0" {
             billField.text = ""
         }
@@ -41,7 +41,7 @@ class MainViewController: UITableViewController {
         tip3Label.text = "$0.00"
         
         calculate()
-        // Do any additional setup after loading the view.
+
         delay(0.5, closure: {
             self.billField.becomeFirstResponder()
             self.tableView.scrollRectToVisible(CGRectZero, animated: false)
@@ -61,7 +61,7 @@ class MainViewController: UITableViewController {
         
         let tipPercentages = tipType.percent
         let billAmount = NSString(string: billField.text!).doubleValue
-        appDelegate.billAmount = billAmount
+        appDelegate.amount = billAmount
         let tip1 = billAmount + (billAmount * tipPercentages[0])
         let tip2 = billAmount + (billAmount * tipPercentages[1])
         let tip3 = billAmount + (billAmount * tipPercentages[2])
@@ -84,7 +84,7 @@ class MainViewController: UITableViewController {
         let menu = MenuView()
         menu.delegate = self
         menu.items = items
-        menu.selectedIndex = NSUserDefaults.standardUserDefaults().objectForKey(kTipType) as? Int
+        menu.selectedIndex = NSUserDefaults.standardUserDefaults().objectForKey(TipType) as? Int
         
         tableView.addSubview(menu)
         
@@ -99,14 +99,7 @@ class MainViewController: UITableViewController {
         menu.setRevealed(!menu.revealed, animated: true)
     }
     
-    func delay(delay:Double, closure:()->()) {
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(delay * Double(NSEC_PER_SEC))
-            ),
-            dispatch_get_main_queue(), closure)
-    }
+    
 
 }
 
@@ -128,7 +121,7 @@ extension MainViewController: UITextFieldDelegate {
 // MARK: - MenuViewDelegate
 extension MainViewController: MenuViewDelegate {
     func menu(menu: MenuView, didSelectItemAtIndex index: Int) {
-        NSUserDefaults.standardUserDefaults().setObject(index, forKey: kTipType)
+        NSUserDefaults.standardUserDefaults().setObject(index, forKey: TipType)
         tipType = tipTypes[index]
         title = tipType.description
         calculate()

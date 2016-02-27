@@ -46,5 +46,14 @@ let tipTypes = [ContentType.Restaurant, ContentType.Hotel, ContentType.Spa, Cont
 
 //let contentType = ["Tip for Restaurant", "Tip for Hotel", "Tip for Spa", "Tip for Taxi"]
 
-let kTipType = "tiptype"
-let kBillAmount = "billamount"
+let TipType = "tiptype"
+let Amount = "amount"
+
+func delay(delay:Double, closure:()->()) {
+    dispatch_after(
+        dispatch_time(
+            DISPATCH_TIME_NOW,
+            Int64(delay * Double(NSEC_PER_SEC))
+        ),
+        dispatch_get_main_queue(), closure)
+}

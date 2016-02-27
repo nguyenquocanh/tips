@@ -12,11 +12,21 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var billAmount: Double?
-    var currencySimple: String?
+    var amount: Double?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        
+
+        if NSUserDefaults.standardUserDefaults().objectForKey(TipType) == nil {
+            amount = 0
+            NSUserDefaults.standardUserDefaults().setObject(0, forKey: TipType)
+            NSUserDefaults.standardUserDefaults().setObject(amount, forKey: Amount)
+        }
+        else {
+            amount = NSUserDefaults.standardUserDefaults().objectForKey(Amount) as? Double
+        }
         
         let appearance = UINavigationBar.appearance()
         appearance.titleTextAttributes = [NSFontAttributeName: UIFont(name: "TrendSansOne", size: 20)!,NSForegroundColorAttributeName: UIColor.whiteColor()]
@@ -24,23 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let navBackgroundImage:UIImage! = UIImage(named: "backgroundNB")
         appearance.setBackgroundImage(navBackgroundImage, forBarMetrics: .Default)
         appearance.tintColor = UIColor.whiteColor()
-
-        if NSUserDefaults.standardUserDefaults().objectForKey(kTipType) == nil {
-            billAmount = 0
-            NSUserDefaults.standardUserDefaults().setObject(0, forKey: kTipType)
-            NSUserDefaults.standardUserDefaults().setObject(billAmount, forKey: kBillAmount)
-        }
-        else {
-            billAmount = NSUserDefaults.standardUserDefaults().objectForKey(kBillAmount) as? Double
-        }
-        
-        let language = NSLocale.currentLocale().objectForKey(NSLocaleLanguageCode)! as! String
-        switch language {
-        case "vi":
-            currencySimple = "đ"
-        default:
-            currencySimple = "$"
-        }
         
         return true
     }
@@ -54,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 
-        NSUserDefaults.standardUserDefaults().setObject(billAmount, forKey: kBillAmount)
+        NSUserDefaults.standardUserDefaults().setObject(amount, forKey: Amount)
         NSUserDefaults.standardUserDefaults().synchronize()
     }
 
